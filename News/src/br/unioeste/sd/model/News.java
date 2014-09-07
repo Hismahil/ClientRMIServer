@@ -1,8 +1,12 @@
 package br.unioeste.sd.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class News {
+public class News implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private List<Notice> news;
 
@@ -11,7 +15,7 @@ public class News {
 		this.news = news;
 	}
 
-	public News(){}
+	public News(){ news = new ArrayList<Notice>(); }
 	
 	public List<Notice> getNews() {
 		return news;
