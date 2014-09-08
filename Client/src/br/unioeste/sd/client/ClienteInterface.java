@@ -7,20 +7,22 @@
 package br.unioeste.sd.client;
 
 import br.unioeste.sd.dao.INews;
-import br.unioeste.sd.model.News;
 import br.unioeste.sd.model.Notice;
-import java.net.MalformedURLException;
-import java.rmi.AccessException;
-import java.rmi.Naming;
+import java.awt.Color;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -29,6 +31,8 @@ import javax.swing.JOptionPane;
 public final class ClienteInterface extends javax.swing.JFrame {
 
     INews Server;
+    ArrayList<Notice> ListNoticias;
+    
     
     
     /**
@@ -37,11 +41,23 @@ public final class ClienteInterface extends javax.swing.JFrame {
      */
     public ClienteInterface() throws RemoteException 
     {
-        Conectar();
         initComponents();  
         
-        Carregar_Assuntos();
-        Carregar_Noticias();
+        try
+        {
+            Conectar();
+            jLabel_Status.setText("Conectado");
+            jLabel_Status.setForeground(Color.GREEN);
+            
+            Carregar_Assuntos(); 
+        }
+        catch(RemoteException E)
+        {
+            jLabel_Status.setText("Desconectado");
+            jLabel_Status.setForeground(Color.GREEN);
+        }
+        
+               
     }
     
         
@@ -56,15 +72,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
             Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
-        /*try
-        {
-            Server = (INews) Naming.lookup("//localhost//news");
-        } 
-        catch (NotBoundException | MalformedURLException | RemoteException ex)
-        {
-            Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        System.out.println("Conectado....");
     }
     
     void Carregar_Assuntos() throws RemoteException
@@ -73,21 +81,17 @@ public final class ClienteInterface extends javax.swing.JFrame {
         
         ArrayList<String> Assuntos = (ArrayList<String>) Server.getAllSubjects();
         
-        Assuntos.stream().forEach((Aux) -> {
-            System.out.println(Aux);
+                
+        SortedSet<String> LAux = new TreeSet<>();  
+        LAux.addAll(Assuntos);
+        
+        LAux.stream().forEach((Aux) -> {
             jComboBox1.addItem(Aux);
         });
         
     }
     
-    void Carregar_Noticias() throws RemoteException
-    {
-        ArrayList<Notice> LN = (ArrayList<Notice>) Server.getAllNews();
-        LN.stream().forEach((N) -> {
-            System.out.println(N.getTitle());
-        });
-    }
-    
+        
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -106,6 +110,9 @@ public final class ClienteInterface extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jButton4 = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel_Status = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         TextFild_Assuntos = new javax.swing.JTextField();
@@ -119,17 +126,31 @@ public final class ClienteInterface extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Notícias Computaria");
+        setResizable(false);
+        setType(java.awt.Window.Type.UTILITY);
+
+        jTabbedPane1.setToolTipText("Notícias Computaria");
+        jTabbedPane1.setName("Notícias Computaria"); // NOI18N
 
         jLabel1.setText("Assuntos:");
 
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
+
         jButton1.setText("Atualizar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null},
-                {null},
-                {null},
-                {null}
+
             },
             new String [] {
                 "Notícia"
@@ -150,6 +171,11 @@ public final class ClienteInterface extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jTextArea1.setEditable(false);
@@ -157,6 +183,18 @@ public final class ClienteInterface extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jTextArea1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2), "Notícia"));
         jScrollPane2.setViewportView(jTextArea1);
+
+        jButton4.setText("Ver todas as notícias");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Status: ");
+
+        jLabel_Status.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel_Status.setText("Desconectado");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -171,24 +209,35 @@ public final class ClienteInterface extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
+                        .addComponent(jButton1))
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 694, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel_Status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton4)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel_Status))
                 .addContainerGap())
         );
 
@@ -207,6 +256,11 @@ public final class ClienteInterface extends javax.swing.JFrame {
         jScrollPane3.setViewportView(TextArea_Texto);
 
         jButton2.setText("Cancelar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Enviar");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -232,7 +286,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
                     .addComponent(jScrollPane3)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addGap(0, 567, Short.MAX_VALUE))
+                        .addGap(0, 764, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -258,7 +312,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -273,7 +327,9 @@ public final class ClienteInterface extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
         );
 
         pack();
@@ -319,6 +375,100 @@ public final class ClienteInterface extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    //BOTÃO ATUALIZAR ==========================================================
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try 
+        {
+            Carregar_Assuntos();
+        } 
+        catch (RemoteException ex) 
+        {
+            Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        
+        if(jComboBox1.getItemCount() > 0)
+        {
+            String Assunto = jComboBox1.getSelectedItem().toString();
+
+            try 
+            {
+                ListNoticias = (ArrayList) Server.getNewsAboutSubject(Assunto);
+                DefaultTableModel Modo = (DefaultTableModel)jTable1.getModel();            
+
+                Modo.setNumRows(0);            
+
+                SortedSet<String> LAux = Organiza_Assuntos(ListNoticias);  
+
+                LAux.stream().forEach((S) -> {
+                    Modo.addRow(new String[]{S});
+                });
+            } 
+            catch (RemoteException ex) 
+            {
+                Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
+            }   
+        }
+        
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if(jComboBox1.getItemCount() > 0)
+        {    
+            try 
+            {
+                ListNoticias = (ArrayList) Server.getAllNews();
+                DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();            
+
+                modelo.setNumRows(0);
+
+                SortedSet<String> LAux = Organiza_Assuntos(ListNoticias);  
+
+                LAux.stream().forEach((S) -> {
+                    modelo.addRow(new String[]{S});
+                });
+            } 
+            catch (RemoteException ex) 
+            {
+                Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        Clear_Texts();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+       
+        jTextArea1.setText("");
+        
+        DefaultTableModel modelo = (DefaultTableModel) jTable1.getModel();         
+        int index = jTable1.getSelectedRow();
+        String Title = modelo.getValueAt(index, 0).toString();
+        
+        ListNoticias.stream().filter((N) -> (N.getTitle().equals(Title))).forEach((Notice N) -> {
+            jTextArea1.setText(N.getText());
+        });
+        
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    SortedSet<String> Organiza_Assuntos(ArrayList<Notice> LN)
+    {
+        ArrayList<String> LNAux = new ArrayList<>();
+        
+        LN.stream().forEach((N) -> {
+            LNAux.add(N.getTitle());
+        });
+        
+        SortedSet<String> LAux = new TreeSet<>();  
+        LAux.addAll(LNAux);
+        
+        return LAux;
+    }
+    
     void Clear_Texts()
     {
         TextArea_Texto.setText("");
@@ -327,38 +477,18 @@ public final class ClienteInterface extends javax.swing.JFrame {
     }
     
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ClienteInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ClienteInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ClienteInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ClienteInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+       
+        try { 
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    new ClienteInterface().setVisible(true);
-                } catch (RemoteException ex) {
-                    Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                new ClienteInterface().setVisible(true);
+            } catch (RemoteException ex) {
+                Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
@@ -370,12 +500,15 @@ public final class ClienteInterface extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel_Status;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
