@@ -32,6 +32,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
 
     INews Server;
     ArrayList<Notice> ListNoticias;
+    String IP = "179.106.201.23";  //"179.106.201.23"
     
     
     
@@ -42,22 +43,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
     public ClienteInterface() throws RemoteException 
     {
         initComponents();  
-        
-        try
-        {
-            Conectar();
-            jLabel_Status.setText("Conectado");
-            jLabel_Status.setForeground(Color.GREEN);
-            
-            Carregar_Assuntos(); 
-        }
-        catch(RemoteException E)
-        {
-            jLabel_Status.setText("Desconectado");
-            jLabel_Status.setForeground(Color.GREEN);
-        }
-        
-               
+        jTextField_IP.setText(IP);
     }
     
         
@@ -66,7 +52,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
         
         Registry registry;
         try {
-            registry = LocateRegistry.getRegistry("localhost");
+            registry = LocateRegistry.getRegistry(IP);
             Server = (INews) registry.lookup("news");            
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(ClienteInterface.class.getName()).log(Level.SEVERE, null, ex);
@@ -113,6 +99,9 @@ public final class ClienteInterface extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel_Status = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jTextField_IP = new javax.swing.JTextField();
+        jButton5 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         TextFild_Assuntos = new javax.swing.JTextField();
@@ -128,7 +117,6 @@ public final class ClienteInterface extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Notícias Computaria");
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
 
         jTabbedPane1.setToolTipText("Notícias Computaria");
         jTabbedPane1.setName("Notícias Computaria"); // NOI18N
@@ -196,6 +184,15 @@ public final class ClienteInterface extends javax.swing.JFrame {
         jLabel_Status.setForeground(new java.awt.Color(255, 0, 0));
         jLabel_Status.setText("Desconectado");
 
+        jLabel7.setText("IP:");
+
+        jButton5.setText("Conectar");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -217,7 +214,13 @@ public final class ClienteInterface extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel_Status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel_Status, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_IP, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -237,7 +240,10 @@ public final class ClienteInterface extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton4)
                     .addComponent(jLabel6)
-                    .addComponent(jLabel_Status))
+                    .addComponent(jLabel_Status)
+                    .addComponent(jLabel7)
+                    .addComponent(jTextField_IP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton5))
                 .addContainerGap())
         );
 
@@ -312,7 +318,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -329,7 +335,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 529, Short.MAX_VALUE))
         );
 
         pack();
@@ -455,6 +461,29 @@ public final class ClienteInterface extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jTable1MouseClicked
 
+    //BOTAO ALTERAR IP
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        
+        String _IP = jTextField_IP.getText();
+        this.IP = _IP;
+        
+        try
+        {
+            Conectar();
+            jLabel_Status.setText("Conectado");
+            jLabel_Status.setForeground(Color.GREEN);
+            
+            Carregar_Assuntos(); 
+        }
+        catch(RemoteException E)
+        {
+            jLabel_Status.setText("Desconectado");
+            jLabel_Status.setForeground(Color.GREEN);
+        }
+        
+        
+    }//GEN-LAST:event_jButton5ActionPerformed
+
     SortedSet<String> Organiza_Assuntos(ArrayList<Notice> LN)
     {
         ArrayList<String> LNAux = new ArrayList<>();
@@ -495,6 +524,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -502,6 +532,7 @@ public final class ClienteInterface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel_Status;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -511,5 +542,6 @@ public final class ClienteInterface extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextField jTextField_IP;
     // End of variables declaration//GEN-END:variables
 }
